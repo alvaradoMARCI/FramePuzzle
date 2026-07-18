@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- FileProvider paths: permite compartir recuerdos exportados de forma segura -->
+<paths>
+    <files-path
+        name="memories"
+        path="FramePuzzle/memories/" />
+    <files-path
+        name="original"
+        path="FramePuzzle/original/" />
+    <files-path
+        name="edited"
+        path="FramePuzzle/edited/" />
+    <files-path
+        name="puzzles"
+        path="FramePuzzle/puzzles/" />
+    <files-path
+        name="backup"
+        path="FramePuzzle/backup/" />
+    <cache-path
+        name="exports"
+        path="exports/" />
+</paths>

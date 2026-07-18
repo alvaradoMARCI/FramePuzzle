@@ -1,0 +1,65 @@
+# FramePuzzle .gitignore
+
+# Android / Gradle
+.gradle/
+build/
+/local.properties
+/.idea/
+.DS_Store
+/captures/
+.externalNativeBuild/
+.cxx/
+*.apk
+*.aab
+*.ap_
+*.dex
+
+# Kotlin
+*.class
+
+# Java
+hs_err_pid*
+
+# Logs
+*.log
+
+# Secrets / Tokens / Credenciales
+*.keystore
+*.jks
+!debug.keystore
+secrets.properties
+local.keys.properties
+.env
+*.env
+*token*.txt
+*credential*.txt
+ghp_*
+github_token*
+
+# Backups locales
+*.fpbackup
+
+# OS
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Editor
+.vscode/
+*.swp
+*.swo
+
+# Compose
+.compose/
+
+# Room schemas (se suben para auditoría)
+!core/database/schemas/
+
+# KSP / Hilt generated
+.cxx/
+generated/
+
+# Test reports
+/reports/
+/test-results/

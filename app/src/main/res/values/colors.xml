@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- FramePuzzle color palette: premium, elegante, minimalista, dorado como acento -->
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+
+    <color name="fp_dark">#0E0E12</color>
+    <color name="fp_dark_surface">#181821</color>
+    <color name="fp_dark_surface_variant">#22222E</color>
+
+    <color name="fp_light">#FAFAFB</color>
+    <color name="fp_light_surface">#FFFFFF</color>
+    <color name="fp_light_surface_variant">#F0F0F4</color>
+
+    <color name="fp_gold">#D4AF37</color>
+    <color name="fp_gold_light">#E8C766</color>
+    <color name="fp_gold_dark">#B8902A</color>
+
+    <color name="fp_text_primary_dark">#F5F5F7</color>
+    <color name="fp_text_secondary_dark">#A0A0AD</color>
+
+    <color name="fp_text_primary_light">#1A1A1F</color>
+    <color name="fp_text_secondary_light">#5A5A66</color>
+
+    <color name="fp_error">#FF5252</color>
+    <color name="fp_success">#4CAF50</color>
+</resources>

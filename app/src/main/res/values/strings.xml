@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">FramePuzzle</string>
+    <string name="app_tagline">Arma tus recuerdos</string>
+
+    <!-- Navigation -->
+    <string name="nav_home">Inicio</string>
+    <string name="nav_create">Crear</string>
+    <string name="nav_library">Biblioteca</string>
+    <string name="nav_profile">Perfil</string>
+
+    <!-- Home -->
+    <string name="home_level">Nivel %1$d</string>
+    <string name="home_xp">XP %1$d / %2$d</string>
+    <string name="home_featured_memory">Recuerdo destacado</string>
+    <string name="home_quick_actions">Accesos rápidos</string>
+
+    <!-- Create -->
+    <string name="create_camera">Tomar fotografía</string>
+    <string name="create_gallery">Elegir de galería</string>
+    <string name="create_new_memory">Nuevo recuerdo</string>
+
+    <!-- Library -->
+    <string name="library_memories">Recuerdos</string>
+    <string name="library_albums">Álbumes</string>
+    <string name="library_history">Historial</string>
+    <string name="library_favorites">Favoritos</string>
+
+    <!-- Profile -->
+    <string name="profile_achievements">Logros</string>
+    <string name="profile_stats">Estadísticas</string>
+    <string name="profile_security">Seguridad</string>
+    <string name="profile_settings">Configuración</string>
+
+    <!-- Editor -->
+    <string name="editor_crop">Recortar</string>
+    <string name="editor_rotate">Rotar</string>
+    <string name="editor_brightness">Brillo</string>
+    <string name="editor_contrast">Contraste</string>
+    <string name="editor_saturation">Saturación</string>
+    <string name="editor_temperature">Temperatura</string>
+    <string name="editor_exposure">Exposición</string>
+    <string name="editor_filters">Filtros</string>
+    <string name="editor_frames">Marcos</string>
+    <string name="editor_text">Texto</string>
+    <string name="editor_save">Guardar</string>
+    <string name="editor_reset">Restaurar original</string>
+
+    <!-- Puzzle -->
+    <string name="puzzle_classic">Puzzle clásico</string>
+    <string name="puzzle_sliding">Puzzle deslizante</string>
+    <string name="puzzle_difficulty_easy">Fácil</string>
+    <string name="puzzle_difficulty_normal">Normal</string>
+    <string name="puzzle_difficulty_hard">Difícil</string>
+    <string name="puzzle_difficulty_custom">Personalizado</string>
+    <string name="puzzle_completed">¡Completaste el recuerdo!</string>
+    <string name="puzzle_moves">%1$d movimientos</string>
+    <string name="puzzle_time">%1$s</string>
+
+    <!-- Security -->
+    <string name="security_pin">PIN</string>
+    <string name="security_biometric">Biometría</string>
+    <string name="security_app_lock">Bloqueo de aplicación</string>
+    <string name="security_enter_pin">Ingresa tu PIN</string>
+    <string name="security_set_pin">Configurar PIN</string>
+
+    <!-- Backup / Transfer -->
+    <string name="backup_create">Crear respaldo</string>
+    <string name="backup_restore">Restaurar respaldo</string>
+    <string name="transfer_qr">Transferir por QR</string>
+
+    <!-- Common -->
+    <string name="common_cancel">Cancelar</string>
+    <string name="common_confirm">Confirmar</string>
+    <string name="common_delete">Eliminar</string>
+    <string name="common_export">Exportar</string>
+    <string name="common_share">Compartir</string>
+    <string name="common_save">Guardar</string>
+    <string name="common_close">Cerrar</string>
+    <string name="common_retry">Reintentar</string>
+    <string name="common_loading">Cargando…</string>
+    <string name="common_error_generic">Algo salió mal. Inténtalo de nuevo.</string>
+
+    <!-- Permissions -->
+    <string name="permission_camera_rationale">FramePuzzle necesita acceso a la cámara para tomar fotografías y crear recuerdos.</string>
+    <string name="permission_gallery_rationale">FramePuzzle necesita acceso a la galería para importar tus fotografías.</string>
+    <string name="permission_open_settings">Abrir ajustes</string>
+</resources>

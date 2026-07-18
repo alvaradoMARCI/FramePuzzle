@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Foreground del icono FramePuzzle: marco con pieza de puzzle dorada.
+    Simula el significado: marco=recuerdos, puzzle=interacción, dorado=progreso.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Marco -->
+    <path
+        android:strokeColor="#D4AF37"
+        android:strokeWidth="3"
+        android:fillColor="#00000000"
+        android:pathData="M30,30 L78,30 L78,78 L30,78 Z" />
+    <!-- Pieza de puzzle dorada central -->
+    <path
+        android:fillColor="#D4AF37"
+        android:pathData="M48,44 L60,44 L60,50 C60,52 64,52 64,50 L64,44 L70,44 L70,52 C70,54 72,54 72,52 L72,50 L76,50 L76,62 L72,62 C70,62 70,66 72,66 L76,66 L76,72 L48,72 Z" />
+    <!-- Brillo dorado -->
+    <path
+        android:fillColor="#E8C766"
+        android:pathData="M52,48 L58,48 L58,52 L52,52 Z" />
+</vector>

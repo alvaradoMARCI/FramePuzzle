@@ -59,7 +59,6 @@ fun TransferScreen(
                 title = "Transferencia disponible próximamente",
                 message = "Esta función está en desarrollo. Mientras tanto, " +
                     "tus recuerdos permanecen en tu teléfono.",
-                icon = Icons.Outlined.QrCodeScanner,
             )
         }
     }

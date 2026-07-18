@@ -25,21 +25,32 @@ import androidx.compose.ui.unit.dp
 import com.jhoel.framepuzzle.core.designsystem.theme.LocalFramePuzzleExtraColors
 
 /**
- * Pantalla de carga inicial. Refleja la identidad FramePuzzle:
- * dorado + animación sutil. Sin dependencias externas.
+ * Pantalla de carga inicial. Logo minimalista animado.
  */
 @Composable
-fun FramePuzzleLoading(modifier: Modifier = Modifier, label: String = "FramePuzzle") {
+fun FramePuzzleLoading(
+    modifier: Modifier = Modifier,
+    label: String = "FramePuzzle",
+) {
     val extra = LocalFramePuzzleExtraColors.current
     val transition = rememberInfiniteTransition(label = "fp_loading")
     val scale by transition.animateFloat(
-        initialValue = 0.9f,
-        targetValue = 1.05f,
+        initialValue = 0.92f,
+        targetValue = 1.0f,
         animationSpec = infiniteRepeatable(
             animation = tween(900),
             repeatMode = RepeatMode.Reverse,
         ),
         label = "fp_loading_scale",
+    )
+    val alpha by transition.animateFloat(
+        initialValue = 0.5f,
+        targetValue = 1f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(900),
+            repeatMode = RepeatMode.Reverse,
+        ),
+        label = "fp_loading_alpha",
     )
 
     Box(
@@ -50,52 +61,25 @@ fun FramePuzzleLoading(modifier: Modifier = Modifier, label: String = "FramePuzz
     ) {
         Box(
             modifier = Modifier
-                .size(80.dp)
+                .size(64.dp)
                 .scale(scale)
-                .clip(RoundedCornerShape(20.dp))
+                .clip(RoundedCornerShape(16.dp))
                 .background(
                     Brush.linearGradient(
-                        colors = listOf(extra.goldGradientStart, extra.goldGradientEnd),
+                        colors = listOf(
+                            MaterialTheme.colorScheme.primary,
+                            MaterialTheme.colorScheme.primaryContainer,
+                        ),
                     ),
                 ),
             contentAlignment = Alignment.Center,
         ) {
             Text(
                 text = "F",
-                color = Color(0xFF1A1A1F),
-                style = MaterialTheme.typography.headlineMedium,
+                color = MaterialTheme.colorScheme.onPrimary,
+                style = MaterialTheme.typography.headlineSmall,
                 fontWeight = FontWeight.Bold,
             )
         }
-    }
-}
-
-/**
- * Pieza de puzzle decorativa: marco con pieza dorada.
- * Usada en empty states, encabezados, etc.
- */
-@Composable
-fun FramePuzzleLogoBadge(
-    modifier: Modifier = Modifier,
-    size: androidx.compose.ui.unit.Dp = 48.dp,
-) {
-    val extra = LocalFramePuzzleExtraColors.current
-    Box(
-        modifier = modifier
-            .size(size)
-            .clip(RoundedCornerShape(12.dp))
-            .background(
-                Brush.linearGradient(
-                    colors = listOf(extra.goldGradientStart, extra.goldGradientEnd),
-                ),
-            ),
-        contentAlignment = Alignment.Center,
-    ) {
-        Text(
-            text = "F",
-            color = Color(0xFF1A1A1F),
-            style = MaterialTheme.typography.titleLarge,
-            fontWeight = FontWeight.Bold,
-        )
     }
 }

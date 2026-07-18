@@ -115,12 +115,6 @@ fun LibraryScreen(
             FramePuzzleEmptyState(
                 title = "Sin recuerdos aún",
                 message = "Toca el botón Crear para armar tu primer recuerdo.",
-                icon = when (state.selectedTab) {
-                    LibraryTab.FAVORITES -> Icons.Outlined.FavoriteBorder
-                    LibraryTab.ALBUMS -> Icons.Outlined.GridView
-                    LibraryTab.HISTORY -> Icons.Outlined.History
-                    else -> Icons.Outlined.Bookmarks
-                },
             )
         } else {
             LazyVerticalGrid(

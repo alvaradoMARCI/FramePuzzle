@@ -62,7 +62,6 @@ fun BackupScreen(
                 title = "Respaldo disponible próximamente",
                 message = "Esta función está en desarrollo. Tu información " +
                     "permanece segura en el dispositivo mientras tanto.",
-                icon = Icons.Outlined.Backup,
             )
         }
     }

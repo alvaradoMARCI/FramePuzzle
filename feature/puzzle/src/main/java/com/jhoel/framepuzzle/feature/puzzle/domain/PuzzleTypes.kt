@@ -1,5 +1,7 @@
 package com.jhoel.framepuzzle.feature.puzzle.domain
 
+import android.graphics.Bitmap
+
 /**
  * Tipos de puzzle (sección 15).
  */
@@ -43,23 +45,36 @@ data class PuzzleConfig(
 /**
  * Estado del tablero durante el juego (sección 16).
  *
- * El tablero guarda la posición actual de cada pieza y su posición objetivo.
+ * El tablero guarda:
+ *  - pieces: lista de piezas con posición actual y objetivo.
+ *  - gridSize: columnas / filas (tablero cuadrado).
+ *  - sourceBitmap: atlas único del cual las piezas extraen su región.
+ *    Evita guardar PNGs individuales (causaba ANR por I/O en Main Thread).
+ *  - pieceWidth / pieceHeight: tamaño de cada pieza en el atlas.
+ *  - emptySlotIndex: índice de la ranura vacía (solo SLIDING).
  */
 data class PuzzleBoard(
     val pieces: List<PuzzlePiece>,
     val gridSize: Int,
+    val sourceBitmap: Bitmap? = null,
+    val pieceWidth: Int = 0,
+    val pieceHeight: Int = 0,
+    val emptySlotIndex: Int = -1,
 ) {
     val isSolved: Boolean
-        get() = pieces.all { it.isCorrect }
+        get() = pieces.isNotEmpty() && pieces.all { it.isCorrect }
+
+    /**
+     * Mapa slot → pieza, precomputado para que el render sea O(1) por slot.
+     * Evita firstOrNull { it.currentIndex == slot } que era O(n) por slot.
+     */
+    val pieceAtSlot: Map<Int, PuzzlePiece> by lazy {
+        pieces.associateBy { it.currentIndex }
+    }
 }
 
 /**
  * Pieza individual del puzzle (sección 16).
- *
- * - currentIndex: posición actual en el tablero.
- * - targetIndex: posición correcta.
- * - bitmapPath: ruta del archivo de la pieza (opcional; el render también
- *   puede ser por sub-bitmap de la imagen original).
  */
 data class PuzzlePiece(
     val id: Int,

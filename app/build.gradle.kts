@@ -41,8 +41,8 @@ android {
         applicationId = "com.jhoel.framepuzzle"
         minSdk = 28
         targetSdk = 34
-        versionCode = 2
-        versionName = "0.2.0-alpha"
+        versionCode = 3
+        versionName = "0.3.0-alpha"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true

@@ -8,8 +8,10 @@ import androidx.compose.ui.unit.sp
 
 /**
  * Tipografía FramePuzzle.
- * Sin fuentes custom para mantener ligereza; usa Sans Serif del sistema.
- * Pesos y tamaños calibrados para sensación premium.
+ * Sin fuentes custom (mantén APK ligero). Usa Sans Serif del sistema
+ * con pesos y tamaños calibrados para sensación premium minimalista.
+ *
+ * Inspiración: Google Photos, Pixel Camera (Sans Serif moderno).
  */
 val FramePuzzleTypography: Typography = Typography(
     displayLarge = TextStyle(
@@ -36,6 +38,7 @@ val FramePuzzleTypography: Typography = Typography(
         fontWeight = FontWeight.SemiBold,
         fontSize = 32.sp,
         lineHeight = 40.sp,
+        letterSpacing = 0.sp,
     ),
     headlineMedium = TextStyle(
         fontFamily = FontFamily.SansSerif,

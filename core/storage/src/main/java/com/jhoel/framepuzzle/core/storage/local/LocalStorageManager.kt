@@ -25,9 +25,10 @@ import javax.inject.Singleton
  * (no accesible desde otras apps sin permisos explícitos vía FileProvider).
  */
 @Singleton
-class LocalStorageManager @Inject constructor(
-    private val context: Context,
+class LocalStorageManager @javax.inject.Inject constructor(
+    @dagger.hilt.android.qualifiers.ApplicationContext appContext: Context,
 ) {
+    private val context: Context = appContext.applicationContext
 
     /** Directorio raíz interno: /data/data/<pkg>/files/FramePuzzle/ */
     val rootDir: File

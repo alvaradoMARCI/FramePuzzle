@@ -39,7 +39,7 @@ import javax.inject.Singleton
  */
 @Singleton
 class BackupManager @Inject constructor(
-    private val context: Context,
+    @dagger.hilt.android.qualifiers.ApplicationContext private val context: Context,
     private val storage: LocalStorageManager,
     private val crypto: CryptoManager,
 ) {

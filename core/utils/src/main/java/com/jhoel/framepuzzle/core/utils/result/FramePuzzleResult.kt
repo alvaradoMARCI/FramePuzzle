@@ -9,7 +9,7 @@ package com.jhoel.framepuzzle.core.utils.result
  */
 sealed interface FramePuzzleResult<out T> {
     data class Success<T>(val data: T) : FramePuzzleResult<T>
-    data class Failure(val error: Failure) : FramePuzzleResult<Nothing>
+    data class Failed(val error: Failure) : FramePuzzleResult<Nothing>
 }
 
 /**
@@ -29,14 +29,14 @@ sealed interface Failure {
 inline fun <T> framePuzzleRun(block: () -> T): FramePuzzleResult<T> = try {
     FramePuzzleResult.Success(block())
 } catch (t: Throwable) {
-    FramePuzzleResult.Failure(Failure.Unknown(t.message ?: "Error desconocido"))
+    FramePuzzleResult.Failed(Failure.Unknown(t.message ?: "Error desconocido"))
 }
 
 /** Map sobre Success. */
 inline fun <T, R> FramePuzzleResult<T>.map(transform: (T) -> R): FramePuzzleResult<R> =
     when (this) {
         is FramePuzzleResult.Success -> FramePuzzleResult.Success(transform(data))
-        is FramePuzzleResult.Failure -> this
+        is FramePuzzleResult.Failed -> this
     }
 
 /** getOrNull seguro. */

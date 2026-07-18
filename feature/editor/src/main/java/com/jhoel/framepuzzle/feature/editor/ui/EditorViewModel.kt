@@ -8,8 +8,8 @@ import com.jhoel.framepuzzle.feature.editor.domain.CropRect
 import com.jhoel.framepuzzle.feature.editor.domain.EditorAdjustments
 import com.jhoel.framepuzzle.feature.editor.domain.FramePuzzleFilter
 import com.jhoel.framepuzzle.feature.library.data.MemoryRepository
-import com.jhoel.framepuzzle.feature.profile.data.UserRepository
-import com.jhoel.framepuzzle.feature.profile.domain.XpEvent
+import com.jhoel.framepuzzle.feature.library.data.UserRepository
+import com.jhoel.framepuzzle.feature.library.domain.XpEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow

@@ -19,6 +19,7 @@ import javax.inject.Singleton
 class PinManager @Inject constructor(
     @ApplicationContext private val context: Context,
 ) {
+    private val appContext: Context = context.applicationContext
 
     private val masterKey: MasterKey by lazy {
         MasterKey.Builder(context)

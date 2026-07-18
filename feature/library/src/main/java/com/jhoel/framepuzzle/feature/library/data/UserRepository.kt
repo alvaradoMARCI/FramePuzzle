@@ -1,9 +1,9 @@
-package com.jhoel.framepuzzle.feature.profile.data
+package com.jhoel.framepuzzle.feature.library.data
 
 import com.jhoel.framepuzzle.core.database.dao.UserDao
 import com.jhoel.framepuzzle.core.database.entity.UserEntity
-import com.jhoel.framepuzzle.feature.profile.domain.User
-import com.jhoel.framepuzzle.feature.profile.domain.XpEvent
+import com.jhoel.framepuzzle.feature.library.domain.User
+import com.jhoel.framepuzzle.feature.library.domain.XpEvent
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject

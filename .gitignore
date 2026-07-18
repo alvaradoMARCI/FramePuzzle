@@ -29,12 +29,22 @@ hs_err_pid*
 !debug.keystore
 secrets.properties
 local.keys.properties
+local.properties
 .env
 *.env
 *token*.txt
 *credential*.txt
 ghp_*
 github_token*
+
+# Signing output
+*.fpbackup
+*.apk
+*.aab
+*.ap_
+*.dex
+app/release/
+app/build/
 
 # Backups locales
 *.fpbackup

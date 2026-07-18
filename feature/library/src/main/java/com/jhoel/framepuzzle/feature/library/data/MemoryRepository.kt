@@ -3,7 +3,6 @@ package com.jhoel.framepuzzle.feature.library.data
 import com.jhoel.framepuzzle.core.database.dao.MemoryDao
 import com.jhoel.framepuzzle.core.database.entity.MemoryEntity
 import com.jhoel.framepuzzle.feature.library.domain.Memory
-import com.jhoel.framepuzzle.feature.profile.HomeUiState
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlinx.coroutines.flow.Flow
@@ -56,22 +55,13 @@ class MemoryRepository @Inject constructor(
 fun MemoryEntity.toDomain(): Memory = Memory(
     id = id,
     title = title,
-    originalImagePath = original_image,
-    editedImagePath = edited_image,
-    createdDate = created_date,
-    albumId = album_id,
+    originalImagePath = originalImage,
+    editedImagePath = editedImage,
+    createdDate = createdDate,
+    albumId = albumId,
     progress = progress,
     favorite = favorite,
 )
-
-fun MemoryEntity.toFeaturedUi(): HomeUiState.FeaturedMemoryUi =
-    HomeUiState.FeaturedMemoryUi(
-        id = id,
-        title = title,
-        originalImagePath = original_image,
-        editedImagePath = edited_image,
-        progress = progress,
-    )
 
 fun Memory.toEntity(): MemoryEntity = MemoryEntity(
     id = id,

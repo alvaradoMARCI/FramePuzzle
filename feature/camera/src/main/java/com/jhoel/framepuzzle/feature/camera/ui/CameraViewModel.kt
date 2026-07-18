@@ -63,19 +63,17 @@ class CameraViewModel @Inject constructor(
                 is FramePuzzleResult.Success -> _uiState.update {
                     it.copy(isCapturing = false, capturedMemoryId = result.data.id)
                 }
-                is FramePuzzleResult.Failure -> _uiState.update {
-                    it.copy(
-                        isCapturing = false,
-                        error = when (result.error) {
-                            is Failure.PermissionDenied -> "Permiso denegado"
-                            is Failure.StorageFull -> "Almacenamiento lleno"
-                            is Failure.NotFound -> "Archivo no encontrado"
-                            is Failure.InvalidFormat -> "Formato inválido"
-                            is Failure.Unauthorized -> "No autorizado"
-                            is Failure.NetworkUnavailable -> "Sin red"
-                            is Failure.Unknown -> result.error.message ?: "No se pudo crear el recuerdo"
-                        },
-                    )
+                is FramePuzzleResult.Failed -> _uiState.update {
+                    val message = when (val err = result.error) {
+                        is Failure.PermissionDenied -> "Permiso denegado"
+                        is Failure.StorageFull -> "Almacenamiento lleno"
+                        is Failure.NotFound -> "Archivo no encontrado"
+                        is Failure.InvalidFormat -> "Formato inválido"
+                        is Failure.Unauthorized -> "No autorizado"
+                        is Failure.NetworkUnavailable -> "Sin red"
+                        is Failure.Unknown -> err.message ?: "No se pudo crear el recuerdo"
+                    }
+                    it.copy(isCapturing = false, error = message)
                 }
             }
         }

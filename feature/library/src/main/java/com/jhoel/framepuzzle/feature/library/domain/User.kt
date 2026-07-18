@@ -1,4 +1,4 @@
-package com.jhoel.framepuzzle.feature.profile.domain
+package com.jhoel.framepuzzle.feature.library.domain
 
 /**
  * Usuario local de FramePuzzle (sección 34, Entidad Usuario).

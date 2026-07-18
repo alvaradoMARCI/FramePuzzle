@@ -1,4 +1,4 @@
-package com.jhoel.framepuzzle.feature.profile.domain
+package com.jhoel.framepuzzle.feature.library.domain
 
 import com.google.common.truth.Truth.assertThat
 import org.junit.Test

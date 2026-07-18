@@ -5,8 +5,8 @@ import androidx.lifecycle.viewModelScope
 import com.jhoel.framepuzzle.feature.library.data.MemoryRepository
 import com.jhoel.framepuzzle.feature.profile.ProfileAchievementUi
 import com.jhoel.framepuzzle.feature.profile.ProfileUiState
-import com.jhoel.framepuzzle.feature.profile.data.AchievementRepository
-import com.jhoel.framepuzzle.feature.profile.data.UserRepository
+import com.jhoel.framepuzzle.feature.library.data.AchievementRepository
+import com.jhoel.framepuzzle.feature.library.data.UserRepository
 import com.jhoel.framepuzzle.feature.puzzle.data.PuzzleRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject

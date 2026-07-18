@@ -1,4 +1,4 @@
-package com.jhoel.framepuzzle.feature.profile.data
+package com.jhoel.framepuzzle.feature.library.data
 
 import com.jhoel.framepuzzle.core.database.dao.AchievementDao
 import com.jhoel.framepuzzle.core.database.entity.AchievementEntity
@@ -42,7 +42,7 @@ private fun AchievementEntity.toDomain(): Achievement = Achievement(
     description = description,
     unlocked = unlocked,
     unlockedDate = date,
-    xpReward = xp_reward,
+    xpReward = xpReward,
 )
 
 private fun Achievement.toEntity(): AchievementEntity = AchievementEntity(

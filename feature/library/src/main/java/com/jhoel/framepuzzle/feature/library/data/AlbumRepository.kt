@@ -37,7 +37,7 @@ private fun AlbumEntity.toDomain(): Album = Album(
     name = name,
     coverPath = cover,
     isAutomatic = type == com.jhoel.framepuzzle.core.database.entity.AlbumType.AUTOMATIC,
-    createdDate = created_date,
+    createdDate = createdDate,
 )
 
 private fun Album.toEntity(): AlbumEntity = AlbumEntity(

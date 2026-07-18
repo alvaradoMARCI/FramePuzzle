@@ -1,4 +1,4 @@
-package com.jhoel.framepuzzle.feature.profile.domain
+package com.jhoel.framepuzzle.feature.library.domain
 
 import com.jhoel.framepuzzle.core.utils.result.Failure
 import com.jhoel.framepuzzle.core.utils.result.FramePuzzleResult
@@ -46,6 +46,6 @@ class CreateUserUseCase {
         try {
             FramePuzzleResult.Success(User.create(name, avatarPath))
         } catch (t: Throwable) {
-            FramePuzzleResult.Failure(Failure.Unknown(t.message ?: "Error creando usuario"))
+            FramePuzzleResult.Failed(Failure.Unknown(t.message ?: "Error creando usuario"))
         }
 }

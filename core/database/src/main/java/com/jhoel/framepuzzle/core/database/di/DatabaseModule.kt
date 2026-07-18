@@ -34,7 +34,7 @@ object DatabaseModule {
         FramePuzzleDatabase::class.java,
         FramePuzzleDatabase.NAME,
     )
-        .fallbackToDestructiveMigration(onDowngrade = true)
+        .fallbackToDestructiveMigration()
         .build()
 
     @Provides

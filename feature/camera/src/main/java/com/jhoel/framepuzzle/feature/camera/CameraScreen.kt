@@ -164,7 +164,7 @@ private fun CameraPreview(
 ) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
-    val helper = remember { CameraXHelper(context, com.jhoel.framepuzzle.core.storage.local.LocalStorageManager(context)) }
+    val helper = remember { com.jhoel.framepuzzle.feature.camera.ui.CameraXHelperProvider.get(context) }
     val previewView = remember { PreviewView(context) }
     val imageCapture = remember { ImageCapture.Builder().build() }
 

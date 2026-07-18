@@ -14,9 +14,9 @@ class FramePuzzleResultTest {
 
     @Test
     fun `Failure map propaga el error`() {
-        val result: FramePuzzleResult<Int> = FramePuzzleResult.Failure(Failure.NotFound)
+        val result: FramePuzzleResult<Int> = FramePuzzleResult.Failed(Failure.NotFound)
         val mapped = result.map { it * 2 }
-        assertThat(mapped).isEqualTo(FramePuzzleResult.Failure(Failure.NotFound))
+        assertThat(mapped).isEqualTo(FramePuzzleResult.Failed(Failure.NotFound))
     }
 
     @Test
@@ -28,12 +28,13 @@ class FramePuzzleResultTest {
     @Test
     fun `framePuzzleRun envuelve excepcion`() {
         val result = framePuzzleRun<Int> { error("boom") }
-        assertThat(result).isInstanceOf(FramePuzzleResult.Failure::class.java)
+        assertThat(result).isInstanceOf(FramePuzzleResult.Failed::class.java)
     }
 
     @Test
     fun `getOrNull devuelve valor en Success`() {
         assertThat(FramePuzzleResult.Success("x").getOrNull()).isEqualTo("x")
-        assertThat(FramePuzzleResult.Failure(Failure.Unknown("x")).getOrNull()).isNull()
+        val failed: FramePuzzleResult<String> = FramePuzzleResult.Failed(Failure.Unknown("x"))
+        assertThat(failed.getOrNull()).isNull()
     }
 }

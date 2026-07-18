@@ -31,7 +31,6 @@ private val FramePuzzleDarkColorScheme = darkColorScheme(
     outline = FramePuzzleColors.DarkOutline,
     error = FramePuzzleColors.Error,
     onError = Color.White,
-    success = FramePuzzleColors.Success,
 )
 
 /**

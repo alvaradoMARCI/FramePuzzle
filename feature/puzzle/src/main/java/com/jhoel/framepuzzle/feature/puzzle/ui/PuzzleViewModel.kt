@@ -13,8 +13,8 @@ import com.jhoel.framepuzzle.feature.puzzle.domain.PuzzleConfig
 import com.jhoel.framepuzzle.feature.puzzle.domain.PuzzleDifficulty
 import com.jhoel.framepuzzle.feature.puzzle.domain.PuzzleType
 import com.jhoel.framepuzzle.feature.puzzle.engine.PuzzleEngine
-import com.jhoel.framepuzzle.feature.profile.data.UserRepository
-import com.jhoel.framepuzzle.feature.profile.domain.XpEvent
+import com.jhoel.framepuzzle.feature.library.data.UserRepository
+import com.jhoel.framepuzzle.feature.library.domain.XpEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.Job

@@ -1,6 +1,5 @@
 package com.jhoel.framepuzzle.navigation
 
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -9,14 +8,15 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.foundation.layout.padding
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import androidx.navigation.NavType
 import com.jhoel.framepuzzle.feature.camera.CameraScreen
 import com.jhoel.framepuzzle.feature.editor.EditorScreen
 import com.jhoel.framepuzzle.feature.library.LibraryScreen
@@ -27,13 +27,19 @@ import com.jhoel.framepuzzle.feature.backup.BackupScreen
 import com.jhoel.framepuzzle.feature.transfer.TransferScreen
 import com.jhoel.framepuzzle.feature.settings.SettingsScreen
 import com.jhoel.framepuzzle.ui.HomeScreen
+import com.jhoel.framepuzzle.ui.MemoryDetailScreen
 
 /**
  * NavHost de FramePuzzle.
  *
- * Single-Activity architecture:
- *  - Bottom bar visible en las 4 pantallas principales.
- *  - En rutas internas (editor, puzzle, detalle) la bottom bar se oculta.
+ * Flujo principal (v0.2.0-alpha):
+ *   Imagen (cámara/galería)
+ *     → Editor
+ *     → Guardar
+ *     → Biblioteca (ver recuerdo creado)
+ *
+ * El puzzle está disponible tras crear el recuerdo, desde la pantalla
+ * de detalle del recuerdo.
  */
 @Composable
 fun FramePuzzleNavHost() {
@@ -87,6 +93,7 @@ fun FramePuzzleNavHost() {
             composable(FramePuzzleRoutes.CREATE) {
                 CameraScreen(
                     onMemoryCreated = { memoryId ->
+                        // Tras confirmar captura y crear el recuerdo, ir al editor.
                         navController.navigate(FramePuzzleRoutes.editor(memoryId)) {
                             popUpTo(FramePuzzleRoutes.CREATE) { inclusive = true }
                         }
@@ -113,9 +120,28 @@ fun FramePuzzleNavHost() {
                 val memoryId = backStack.arguments?.getString("memoryId").orEmpty()
                 EditorScreen(
                     memoryId = memoryId,
-                    onDone = { navController.navigate(FramePuzzleRoutes.puzzle(memoryId)) {
-                        popUpTo(FramePuzzleRoutes.EDITOR) { inclusive = true }
-                    } },
+                    onDone = {
+                        // Tras guardar, ir a detalle del recuerdo en la biblioteca.
+                        navController.navigate(FramePuzzleRoutes.memoryDetail(memoryId)) {
+                            popUpTo(FramePuzzleRoutes.EDITOR) { inclusive = true }
+                        }
+                    },
+                )
+            }
+            composable(
+                route = FramePuzzleRoutes.MEMORY_DETAIL,
+                arguments = listOf(navArgument("memoryId") { type = NavType.StringType }),
+            ) { backStack ->
+                val memoryId = backStack.arguments?.getString("memoryId").orEmpty()
+                MemoryDetailScreen(
+                    memoryId = memoryId,
+                    onBack = { navController.popBackStack() },
+                    onPlayPuzzle = { id ->
+                        navController.navigate(FramePuzzleRoutes.puzzle(id))
+                    },
+                    onEdit = { id ->
+                        navController.navigate(FramePuzzleRoutes.editor(id))
+                    },
                 )
             }
             composable(
@@ -125,9 +151,11 @@ fun FramePuzzleNavHost() {
                 val memoryId = backStack.arguments?.getString("memoryId").orEmpty()
                 PuzzleScreen(
                     memoryId = memoryId,
-                    onCompleted = { navController.navigate(FramePuzzleRoutes.HOME) {
-                        popUpTo(FramePuzzleRoutes.HOME) { inclusive = true }
-                    } },
+                    onCompleted = {
+                        navController.navigate(FramePuzzleRoutes.HOME) {
+                            popUpTo(FramePuzzleRoutes.HOME) { inclusive = true }
+                        }
+                    },
                 )
             }
             composable(FramePuzzleRoutes.SETTINGS) {

@@ -5,8 +5,8 @@ import androidx.lifecycle.viewModelScope
 import com.jhoel.framepuzzle.feature.camera.CameraSelectorUi
 import com.jhoel.framepuzzle.feature.camera.CameraUiState
 import com.jhoel.framepuzzle.feature.camera.domain.CreateMemoryFromImageUseCase
-import com.jhoel.framepuzzle.core.utils.result.FramePuzzleResult
 import com.jhoel.framepuzzle.core.utils.result.Failure
+import com.jhoel.framepuzzle.core.utils.result.FramePuzzleResult
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,9 +20,9 @@ import kotlinx.coroutines.launch
  *
  * Maneja:
  *  - Estado de permisos.
- *  - Captura de imagen (CameraX).
- *  - Importación desde galería.
- *  - Creación del recuerdo.
+ *  - Captura de imagen (CameraX) o selección desde galería.
+ *  - Pantalla de confirmación de la imagen.
+ *  - Creación del recuerdo (solo al confirmar).
  */
 @HiltViewModel
 class CameraViewModel @Inject constructor(
@@ -39,7 +39,8 @@ class CameraViewModel @Inject constructor(
     fun flipCamera() {
         _uiState.update {
             it.copy(
-                cameraSelector = if (it.cameraSelector == CameraSelectorUi.BACK) CameraSelectorUi.FRONT else CameraSelectorUi.BACK,
+                cameraSelector = if (it.cameraSelector == CameraSelectorUi.BACK) CameraSelectorUi.FRONT
+                else CameraSelectorUi.BACK,
             )
         }
     }
@@ -53,15 +54,38 @@ class CameraViewModel @Inject constructor(
     }
 
     /**
-     * Crea un recuerdo a partir de una imagen capturada o importada.
-     * Tras crear, expone el nuevo ID en el estado (la UI navega al editor).
+     * Se llama cuando CameraX captura una foto correctamente.
+     * Muestra la pantalla de confirmación.
      */
-    fun createMemory(imagePath: String, title: String = "Recuerdo") {
+    fun onImageCaptured(path: String) {
+        _uiState.update { it.copy(pendingImagePath = path, isCapturing = false) }
+    }
+
+    /**
+     * Se llama cuando el usuario elige una imagen de la galería.
+     * Muestra la pantalla de confirmación.
+     */
+    fun onImagePicked(path: String) {
+        _uiState.update { it.copy(pendingImagePath = path) }
+    }
+
+    /**
+     * Descarta la imagen pendiente y vuelve al modo captura.
+     */
+    fun discardCapture() {
+        _uiState.update { it.copy(pendingImagePath = null) }
+    }
+
+    /**
+     * Confirma la imagen pendiente: crea el recuerdo y navega al editor.
+     */
+    fun confirmCapture() {
+        val pending = _uiState.value.pendingImagePath ?: return
         viewModelScope.launch {
             _uiState.update { it.copy(isCapturing = true, error = null) }
-            when (val result = createMemoryUseCase(imagePath, title)) {
+            when (val result = createMemoryUseCase(pending, title = "Recuerdo")) {
                 is FramePuzzleResult.Success -> _uiState.update {
-                    it.copy(isCapturing = false, capturedMemoryId = result.data.id)
+                    it.copy(isCapturing = false, capturedMemoryId = result.data.id, pendingImagePath = null)
                 }
                 is FramePuzzleResult.Failed -> _uiState.update {
                     val message = when (val err = result.error) {

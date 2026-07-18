@@ -1,7 +1,7 @@
 package com.jhoel.framepuzzle.feature.camera.ui
 
 import android.content.Context
-import android.net.Uri
+import android.util.Log
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageCapture
 import androidx.camera.core.ImageCaptureException
@@ -13,10 +13,10 @@ import androidx.lifecycle.LifecycleOwner
 import com.jhoel.framepuzzle.core.storage.local.LocalStorageManager
 import com.jhoel.framepuzzle.core.utils.log.FramePuzzleLogger
 import dagger.hilt.android.qualifiers.ApplicationContext
-import javax.inject.Inject
-import javax.inject.Singleton
 import java.io.File
 import java.util.concurrent.Executor
+import javax.inject.Inject
+import javax.inject.Singleton
 
 /**
  * Helper para abstraer CameraX (sección 11).
@@ -26,6 +26,10 @@ import java.util.concurrent.Executor
  *  - Enfoque automático.
  *  - Control básico de captura.
  *  - Compatibilidad con cámaras frontal y trasera.
+ *
+ * IMPORTANTE: el [ImageCapture] devuelto por [startPreview] es el mismo que
+ * debe usarse para capturar fotos. Si se crea un ImageCapture aparte, no
+ * estará conectado a la cámara y la captura nunca se completará.
  */
 @Singleton
 class CameraXHelper @Inject constructor(
@@ -35,12 +39,23 @@ class CameraXHelper @Inject constructor(
 
     private val executor: Executor by lazy { ContextCompat.getMainExecutor(context) }
 
-    /** Inicia la preview de CameraX en el [PreviewView] indicado. */
+    /**
+     * Inicia la preview de CameraX en el [PreviewView] indicado.
+     *
+     * @return el [ImageCapture] vinculado al ciclo de vida, que debe usarse
+     *   para llamar a [capture]. Devuelve null si CameraX no puede iniciarse.
+     */
     fun startPreview(
         lifecycleOwner: LifecycleOwner,
         previewView: PreviewView,
         lensFacing: Int,
-    ) {
+        flashMode: Int = ImageCapture.FLASH_MODE_AUTO,
+    ): ImageCapture? {
+        val capture = ImageCapture.Builder()
+            .setCaptureMode(ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY)
+            .setFlashMode(flashMode)
+            .build()
+
         val providerFuture = ProcessCameraProvider.getInstance(context)
         providerFuture.addListener({
             try {
@@ -51,15 +66,15 @@ class CameraXHelper @Inject constructor(
                 val selector = CameraSelector.Builder()
                     .requireLensFacing(lensFacing)
                     .build()
-                val capture = ImageCapture.Builder()
-                    .setCaptureMode(ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY)
-                    .build()
                 provider.unbindAll()
                 provider.bindToLifecycle(lifecycleOwner, selector, preview, capture)
+                FramePuzzleLogger.d(TAG, "Preview iniciada con lensFacing=$lensFacing")
             } catch (t: Throwable) {
                 FramePuzzleLogger.e(TAG, "Error iniciando preview CameraX", t)
             }
         }, executor)
+
+        return capture
     }
 
     /**
@@ -80,7 +95,7 @@ class CameraXHelper @Inject constructor(
             executor,
             object : ImageCapture.OnImageSavedCallback {
                 override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
-                    FramePuzzleLogger.d(TAG, "Captura guardada: ${target.name}")
+                    FramePuzzleLogger.d(TAG, "Captura guardada: ${target.absolutePath}")
                     onSaved(target.absolutePath)
                 }
 

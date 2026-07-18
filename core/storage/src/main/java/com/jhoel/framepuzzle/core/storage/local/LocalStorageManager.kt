@@ -69,11 +69,11 @@ class LocalStorageManager @javax.inject.Inject constructor(
 
     /** Crea archivo destino para una imagen original. */
     fun newOriginalFile(memoryId: String): File =
-        File(originalDir, "$memoryId.jpg")
+        File(originalDir, "$memoryId.jpg").also { it.parentFile?.mkdirs() }
 
     /** Crea archivo destino para una imagen editada. */
     fun newEditedFile(memoryId: String): File =
-        File(editedDir, "${memoryId}_edited.jpg")
+        File(editedDir, "${memoryId}_edited.jpg").also { it.parentFile?.mkdirs() }
 
     /** Crea archivo destino para la imagen final del puzzle resuelto. */
     fun newPuzzleFile(puzzleId: String): File =

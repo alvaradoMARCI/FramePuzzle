@@ -4,13 +4,12 @@ import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.ColorMatrix
 import android.graphics.ColorMatrixColorFilter
-import android.graphics.Matrix
 import android.graphics.Paint
-import com.jhoel.framepuzzle.core.utils.image.ImageUtils
 import com.jhoel.framepuzzle.core.storage.local.LocalStorageManager
+import com.jhoel.framepuzzle.core.utils.image.ImageUtils
+import com.jhoel.framepuzzle.feature.editor.domain.CropRect
 import com.jhoel.framepuzzle.feature.editor.domain.EditorAdjustments
 import com.jhoel.framepuzzle.feature.editor.domain.FramePuzzleFilter
-import com.jhoel.framepuzzle.feature.editor.domain.CropRect
 import java.io.File
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -30,6 +29,42 @@ class ImageProcessor @Inject constructor(
 ) {
 
     /**
+     * Decodifica el bitmap original limitando memoria.
+     * @param reqWidth 0 = original.
+     */
+    fun decodeSource(originalPath: String, reqWidth: Int = 0, reqHeight: Int = 0): Bitmap? =
+        ImageUtils.decodeSampled(originalPath, reqWidth, reqHeight)
+
+    /**
+     * Aplica los ajustes y el filtro sobre la imagen ORIGINAL y devuelve
+     * un bitmap NUEVO (sin guardarlo). Usado para preview en vivo.
+     */
+    fun applyToBitmap(
+        source: Bitmap,
+        adjustments: EditorAdjustments,
+        filter: FramePuzzleFilter,
+    ): Bitmap {
+        var result = source
+
+        // 1) Recorte (preview)
+        adjustments.crop?.let { crop -> result = applyCrop(result, crop) }
+
+        // 2) Rotación
+        if (adjustments.rotationDegrees != 0) {
+            result = ImageUtils.rotate(result, adjustments.rotationDegrees.toFloat())
+        }
+
+        // 3) Filtro (ColorMatrix)
+        if (filter != FramePuzzleFilter.NONE) {
+            result = applyFilter(result, filter)
+        }
+
+        // 4) Ajustes finos
+        result = applyAdjustments(result, adjustments)
+        return result
+    }
+
+    /**
      * Aplica los ajustes y el filtro sobre la imagen ORIGINAL y guarda
      * una nueva versión en edited/[memoryId]_edited.jpg.
      *
@@ -44,25 +79,8 @@ class ImageProcessor @Inject constructor(
         val source = ImageUtils.decodeSampled(originalPath, reqWidth = 2048, reqHeight = 2048)
             ?: error("No se pudo decodificar la imagen original")
 
-        var result = source
+        val result = applyToBitmap(source, adjustments, filter)
 
-        // 1) Recorte
-        adjustments.crop?.let { crop -> result = applyCrop(result, crop) }
-
-        // 2) Rotación
-        if (adjustments.rotationDegrees != 0) {
-            result = ImageUtils.rotate(result, adjustments.rotationDegrees.toFloat())
-        }
-
-        // 3) Filtro (ColorMatrix)
-        if (filter != FramePuzzleFilter.NONE) {
-            result = applyFilter(result, filter)
-        }
-
-        // 4) Ajustes finos (capa adicional sobre el filtro)
-        result = applyAdjustments(result, adjustments)
-
-        // 5) Guardar
         val target = storage.newEditedFile(memoryId)
         return ImageUtils.saveJpeg(result, target, quality = 92)
     }
@@ -114,10 +132,7 @@ class ImageProcessor @Inject constructor(
                 ),
             )
         }
-        val paint = Paint().apply { colorFilter = ColorMatrixColorFilter(matrix) }
-        val out = Bitmap.createBitmap(bitmap.width, bitmap.height, Bitmap.Config.ARGB_8888)
-        Canvas(out).drawBitmap(bitmap, 0f, 0f, paint)
-        return out
+        return applyColorMatrix(bitmap, matrix)
     }
 
     private fun applyAdjustments(bitmap: Bitmap, a: EditorAdjustments): Bitmap {
@@ -153,8 +168,11 @@ class ImageProcessor @Inject constructor(
         )
         cm.postConcat(contrastMatrix)
         cm.postConcat(tempMatrix)
+        return applyColorMatrix(bitmap, cm)
+    }
 
-        val paint = Paint().apply { colorFilter = ColorMatrixColorFilter(cm) }
+    private fun applyColorMatrix(bitmap: Bitmap, matrix: ColorMatrix): Bitmap {
+        val paint = Paint().apply { colorFilter = ColorMatrixColorFilter(matrix) }
         val out = Bitmap.createBitmap(bitmap.width, bitmap.height, Bitmap.Config.ARGB_8888)
         Canvas(out).drawBitmap(bitmap, 0f, 0f, paint)
         return out

@@ -6,40 +6,40 @@ import androidx.compose.ui.graphics.Color
  * Paleta de colores FramePuzzle.
  *
  * Principios visuales del producto:
- *  - Premium, elegante, minimalista, emocional.
- *  - Dorado como acento de progreso / logro.
+ *  - Premium, elegante, minimalista, moderno.
+ *  - Dorado solo como acento de progreso / logro / detalles importantes.
+ *  - Base limpia: blanco, negro, gris grafito y azul oscuro.
  *  - Modo oscuro como predeterminado (mayor emoción visual sobre fotografías).
  */
 object FramePuzzleColors {
 
-    // Gold (acento principal: progreso, logro, identidad)
-    val Gold = Color(0xFFD4AF37)
-    val GoldLight = Color(0xFFE8C766)
-    val GoldDark = Color(0xFFB8902A)
-    val GoldGradientStart = Color(0xFFE8C766)
-    val GoldGradientEnd = Color(0xFFB8902A)
+    // Acento dorado (SOLO para detalles importantes: progreso, logros, primary)
+    val Gold = Color(0xFFE8B86C)
+    val GoldBright = Color(0xFFF5CE8A)
+    val GoldDeep = Color(0xFFB8893E)
 
-    // Dark theme (predeterminado)
-    val DarkBackground = Color(0xFF0E0E12)
-    val DarkSurface = Color(0xFF181821)
-    val DarkSurfaceVariant = Color(0xFF22222E)
-    val DarkOnBackground = Color(0xFFF5F5F7)
-    val DarkOnSurface = Color(0xFFF5F5F7)
-    val DarkOnSurfaceVariant = Color(0xFFA0A0AD)
-    val DarkOutline = Color(0xFF33333F)
+    // Modo oscuro premium (predeterminado)
+    // Azul oscuro casi negro, no marrón
+    val DarkBackground = Color(0xFF0B1220)       // azul oscuro profundo
+    val DarkSurface = Color(0xFF121A2C)          // surface azul oscuro
+    val DarkSurfaceVariant = Color(0xFF1B2438)   // variant más claro
+    val DarkOnBackground = Color(0xFFF5F7FA)     // texto principal casi blanco
+    val DarkOnSurface = Color(0xFFF5F7FA)
+    val DarkOnSurfaceVariant = Color(0xFFA5ADC0) // texto secundario gris
+    val DarkOutline = Color(0xFF2B3550)
 
-    // Light theme
-    val LightBackground = Color(0xFFFAFAFB)
+    // Modo claro
+    val LightBackground = Color(0xFFFAFBFC)      // blanco roto
     val LightSurface = Color(0xFFFFFFFF)
-    val LightSurfaceVariant = Color(0xFFF0F0F4)
-    val LightOnBackground = Color(0xFF1A1A1F)
-    val LightOnSurface = Color(0xFF1A1A1F)
-    val LightOnSurfaceVariant = Color(0xFF5A5A66)
-    val LightOutline = Color(0xFFE0E0E6)
+    val LightSurfaceVariant = Color(0xFFEFF1F5)
+    val LightOnBackground = Color(0xFF0B1220)
+    val LightOnSurface = Color(0xFF0B1220)
+    val LightOnSurfaceVariant = Color(0xFF5A6378)
+    val LightOutline = Color(0xFFE0E4EC)
 
     // Estado
     val Error = Color(0xFFFF5252)
-    val Success = Color(0xFF4CAF50)
+    val Success = Color(0xFF3DD68C)
     val Warning = Color(0xFFFFC107)
-    val Info = Color(0xFF2196F3)
+    val Info = Color(0xFF4A90E2)
 }

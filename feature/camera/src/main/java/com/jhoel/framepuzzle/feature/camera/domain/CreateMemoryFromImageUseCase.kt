@@ -1,7 +1,6 @@
 package com.jhoel.framepuzzle.feature.camera.domain
 
 import com.jhoel.framepuzzle.core.storage.local.LocalStorageManager
-import com.jhoel.framepuzzle.core.utils.image.ImageUtils
 import com.jhoel.framepuzzle.core.utils.result.Failure
 import com.jhoel.framepuzzle.core.utils.result.FramePuzzleResult
 import com.jhoel.framepuzzle.core.utils.result.framePuzzleRun
@@ -32,16 +31,20 @@ class CreateMemoryFromImageUseCase @Inject constructor(
         sourcePath: String,
         title: String,
     ): FramePuzzleResult<Memory> = framePuzzleRun {
+        require(sourcePath.isNotBlank()) { "sourcePath vacía" }
+        val sourceFile = File(sourcePath)
+        require(sourceFile.exists()) { "Archivo no existe: $sourcePath" }
+
         val memoryId = java.util.UUID.randomUUID().toString()
         val target = storage.newOriginalFile(memoryId)
 
         // Copia interna (no se toca el archivo original del usuario)
-        File(sourcePath).copyTo(target, overwrite = true)
+        sourceFile.copyTo(target, overwrite = true)
 
         val memory = Memory(
             id = memoryId,
             title = title.trim().ifBlank { "Recuerdo ${System.currentTimeMillis()}" },
-            originalImagePath = storage.relativePath(target),
+            originalImagePath = target.absolutePath, // ruta absoluta para Coil
             editedImagePath = null,
             createdDate = System.currentTimeMillis(),
             albumId = null,
@@ -50,25 +53,5 @@ class CreateMemoryFromImageUseCase @Inject constructor(
         )
         memoryRepository.create(memory)
         memory
-    }
-}
-
-/**
- * Caso de uso: importar una imagen desde la galería y crear una copia interna.
- *
- * Regla (sección 12): no modificar archivos originales, crear copias internas.
- */
-class ImportImageUseCase @Inject constructor(
-    private val storage: LocalStorageManager,
-) {
-
-    suspend operator fun invoke(
-        sourcePath: String,
-        suggestedName: String,
-    ): FramePuzzleResult<File> = framePuzzleRun {
-        val memoryId = java.util.UUID.randomUUID().toString()
-        val target = storage.newOriginalFile(memoryId)
-        File(sourcePath).copyTo(target, overwrite = true)
-        target
     }
 }

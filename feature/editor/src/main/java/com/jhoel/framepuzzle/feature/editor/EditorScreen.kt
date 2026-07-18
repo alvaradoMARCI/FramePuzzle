@@ -19,15 +19,15 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Crop
-import androidx.compose.material.icons.outlined.Rotate90DegreesCw
+import androidx.compose.material.icons.outlined.CropRotate
+import androidx.compose.material.icons.outlined.Restore
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
@@ -36,18 +36,16 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import coil.compose.AsyncImage
 import com.jhoel.framepuzzle.core.designsystem.components.FramePuzzleLoading
 import com.jhoel.framepuzzle.core.designsystem.tokens.FramePuzzleSpacing
 import com.jhoel.framepuzzle.feature.editor.domain.FramePuzzleFilter
@@ -57,6 +55,10 @@ import com.jhoel.framepuzzle.feature.editor.ui.EditorViewModel
  * Pantalla Editor (sección 13).
  *
  * Regla: la edición es NO destructiva. El original nunca se modifica.
+ *
+ * El preview en vivo aplica los ajustes y filtros al bitmap decodificado
+ * en memoria (200ms debounce) para que el usuario vea los cambios en
+ * tiempo real antes de guardar.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -67,6 +69,7 @@ fun EditorScreen(
 ) {
     LaunchedEffect(memoryId) { viewModel.load(memoryId) }
     val state by viewModel.uiState.collectAsStateWithLifecycle()
+    val previewBitmap by viewModel.previewBitmap.collectAsStateWithLifecycle()
 
     LaunchedEffect(state.saved) {
         if (state.saved) {
@@ -84,7 +87,9 @@ fun EditorScreen(
                     titleContentColor = MaterialTheme.colorScheme.onBackground,
                 ),
                 actions = {
-                    IconButton(onClick = viewModel::reset) { Text("↺") }
+                    IconButton(onClick = viewModel::reset) {
+                        Icon(Icons.Outlined.Restore, contentDescription = "Restaurar")
+                    }
                     Button(
                         onClick = { viewModel.save(memoryId) },
                         enabled = !state.isSaving,
@@ -103,33 +108,42 @@ fun EditorScreen(
                 .padding(padding)
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
-                .padding(FramePuzzleSpacing.lg),
-            verticalArrangement = Arrangement.spacedBy(FramePuzzleSpacing.lg),
+                .padding(horizontal = FramePuzzleSpacing.lg, vertical = FramePuzzleSpacing.md),
+            verticalArrangement = Arrangement.spacedBy(FramePuzzleSpacing.md),
         ) {
-            // Preview
+            // Preview en vivo
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(320.dp)
-                    .clip(RoundedCornerShape(16.dp))
-                    .background(MaterialTheme.colorScheme.surfaceVariant),
+                    .height(340.dp)
+                    .clip(RoundedCornerShape(20.dp))
+                    .background(Color.Black),
                 contentAlignment = Alignment.Center,
             ) {
-                AsyncImage(
-                    model = state.editedPath ?: state.originalPath,
-                    contentDescription = state.title,
-                    modifier = Modifier.fillMaxSize(),
-                )
+                val bmp = previewBitmap
+                if (bmp != null) {
+                    androidx.compose.foundation.Image(
+                        bitmap = bmp.asImageBitmap(),
+                        contentDescription = state.title,
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = ContentScale.Fit,
+                    )
+                } else {
+                    CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
+                }
             }
 
             // Quick tools
             Row(horizontalArrangement = Arrangement.spacedBy(FramePuzzleSpacing.md)) {
                 FilledTonalIconButton(onClick = viewModel::rotate90) {
-                    Icon(Icons.Outlined.Rotate90DegreesCw, contentDescription = "Rotar")
+                    Icon(Icons.Outlined.CropRotate, contentDescription = "Rotar 90°")
                 }
-                FilledTonalIconButton(onClick = { /* crop UI */ }) {
-                    Icon(Icons.Outlined.Crop, contentDescription = "Recortar")
-                }
+                Text(
+                    text = "Rotar ${state.adjustments.rotationDegrees}°",
+                    style = MaterialTheme.typography.labelLarge,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(start = 4.dp),
+                )
             }
 
             // Filtros (sección 13: Filtros propios FramePuzzle)
@@ -176,12 +190,23 @@ fun EditorScreen(
                 onValueChange = { v -> viewModel.updateAdjustments { it.copy(exposure = v) } },
             )
 
-            OutlinedButton(
+            Button(
                 onClick = { viewModel.save(memoryId) },
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().height(56.dp),
                 enabled = !state.isSaving,
+                shape = RoundedCornerShape(16.dp),
             ) {
-                Text(if (state.isSaving) "Guardando…" else "Guardar y continuar")
+                if (state.isSaving) {
+                    CircularProgressIndicator(
+                        color = MaterialTheme.colorScheme.onPrimary,
+                        strokeWidth = 2.dp,
+                        modifier = Modifier.size(20.dp),
+                    )
+                    Spacer(Modifier.width(8.dp))
+                    Text("Guardando…")
+                } else {
+                    Text("Guardar y crear puzzle")
+                }
             }
         }
     }
@@ -195,8 +220,8 @@ private fun FilterChip(
 ) {
     Box(
         modifier = Modifier
-            .size(width = 90.dp, height = 56.dp)
-            .clip(RoundedCornerShape(12.dp))
+            .size(width = 100.dp, height = 56.dp)
+            .clip(RoundedCornerShape(14.dp))
             .background(
                 if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surface,
             )
@@ -223,9 +248,13 @@ private fun SliderRow(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
-            Text(label, style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
             Text(
-                String.format("%.2f", value),
+                label,
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            Text(
+                String.format("%+.2f", value),
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )

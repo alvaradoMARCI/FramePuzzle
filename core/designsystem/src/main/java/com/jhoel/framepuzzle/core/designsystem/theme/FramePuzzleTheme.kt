@@ -10,18 +10,18 @@ import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
 
 /**
- * Esquema oscuro de FramePuzzle (predeterminado).
- * El dorado es el color primario: representa progreso, valor y logros.
+ * Esquema oscuro premium de FramePuzzle (predeterminado).
+ * Fondo azul oscuro casi negro, dorado como único acento.
  */
 private val FramePuzzleDarkColorScheme = darkColorScheme(
     primary = FramePuzzleColors.Gold,
-    onPrimary = Color(0xFF1A1A1F),
-    primaryContainer = FramePuzzleColors.GoldDark,
-    onPrimaryContainer = FramePuzzleColors.GoldLight,
-    secondary = FramePuzzleColors.GoldLight,
-    onSecondary = Color(0xFF1A1A1F),
+    onPrimary = Color(0xFF0B1220),
+    primaryContainer = FramePuzzleColors.GoldDeep,
+    onPrimaryContainer = FramePuzzleColors.GoldBright,
+    secondary = FramePuzzleColors.GoldBright,
+    onSecondary = Color(0xFF0B1220),
     tertiary = FramePuzzleColors.Gold,
-    onTertiary = Color(0xFF1A1A1F),
+    onTertiary = Color(0xFF0B1220),
     background = FramePuzzleColors.DarkBackground,
     onBackground = FramePuzzleColors.DarkOnBackground,
     surface = FramePuzzleColors.DarkSurface,
@@ -37,13 +37,13 @@ private val FramePuzzleDarkColorScheme = darkColorScheme(
  * Esquema claro de FramePuzzle.
  */
 private val FramePuzzleLightColorScheme = lightColorScheme(
-    primary = FramePuzzleColors.GoldDark,
+    primary = FramePuzzleColors.GoldDeep,
     onPrimary = Color.White,
-    primaryContainer = FramePuzzleColors.GoldLight,
-    onPrimaryContainer = Color(0xFF1A1A1F),
-    secondary = FramePuzzleColors.GoldDark,
+    primaryContainer = FramePuzzleColors.GoldBright,
+    onPrimaryContainer = Color(0xFF0B1220),
+    secondary = FramePuzzleColors.GoldDeep,
     onSecondary = Color.White,
-    tertiary = FramePuzzleColors.GoldDark,
+    tertiary = FramePuzzleColors.GoldDeep,
     onTertiary = Color.White,
     background = FramePuzzleColors.LightBackground,
     onBackground = FramePuzzleColors.LightOnBackground,
@@ -61,8 +61,8 @@ val LocalFramePuzzleExtraColors = staticCompositionLocalOf { FramePuzzleExtraCol
 
 /** Datos extendidos del tema (no cubiertos por Material3). */
 data class FramePuzzleExtraColors(
-    val goldGradientStart: Color = FramePuzzleColors.GoldGradientStart,
-    val goldGradientEnd: Color = FramePuzzleColors.GoldGradientEnd,
+    val goldGradientStart: Color = FramePuzzleColors.GoldBright,
+    val goldGradientEnd: Color = FramePuzzleColors.GoldDeep,
 )
 
 /**

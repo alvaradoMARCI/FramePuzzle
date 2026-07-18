@@ -1,5 +1,6 @@
 package com.jhoel.framepuzzle.feature.editor.ui
 
+import android.graphics.Bitmap
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.jhoel.framepuzzle.feature.editor.EditorUiState
@@ -12,17 +13,24 @@ import com.jhoel.framepuzzle.feature.library.data.UserRepository
 import com.jhoel.framepuzzle.feature.library.domain.XpEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 /**
  * ViewModel del Editor (sección 13).
  *
  * Garantiza el flujo no destructivo:
  *   Original → Ediciones → Puzzle → Experiencia final.
+ *
+ * El preview en vivo aplica los ajustes al bitmap decodificado y lo expone
+ * vía [previewBitmap]. El guardado real genera un JPEG en disco.
  */
 @HiltViewModel
 class EditorViewModel @Inject constructor(
@@ -34,16 +42,32 @@ class EditorViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(EditorUiState())
     val uiState: StateFlow<EditorUiState> = _uiState.asStateFlow()
 
+    private val _previewBitmap = MutableStateFlow<Bitmap?>(null)
+    val previewBitmap: StateFlow<Bitmap?> = _previewBitmap.asStateFlow()
+
+    private var sourceBitmap: Bitmap? = null
+    private var debounceJob: Job? = null
+
     fun load(memoryId: String) {
         viewModelScope.launch {
             val memory = memoryRepository.getById(memoryId) ?: run {
                 _uiState.update { it.copy(isLoading = false, error = "Recuerdo no encontrado") }
                 return@launch
             }
+            val originalPath = memory.originalImagePath
+            val bitmap = withContext(Dispatchers.IO) {
+                imageProcessor.decodeSource(originalPath, reqWidth = 1080, reqHeight = 1080)
+            }
+            if (bitmap == null) {
+                _uiState.update { it.copy(isLoading = false, error = "No se pudo cargar la imagen") }
+                return@launch
+            }
+            sourceBitmap = bitmap
+            _previewBitmap.value = bitmap
             _uiState.update {
                 it.copy(
                     isLoading = false,
-                    originalPath = memory.originalImagePath,
+                    originalPath = originalPath,
                     editedPath = memory.editedImagePath,
                     title = memory.title,
                 )
@@ -53,14 +77,16 @@ class EditorViewModel @Inject constructor(
 
     fun updateAdjustments(transform: (EditorAdjustments) -> EditorAdjustments) {
         _uiState.update { it.copy(adjustments = transform(it.adjustments)) }
+        schedulePreviewUpdate()
     }
 
     fun setFilter(filter: FramePuzzleFilter) {
         _uiState.update { it.copy(filter = filter) }
+        schedulePreviewUpdate()
     }
 
-    fun rotate90() = updateAdjustments {
-        it.copy(rotationDegrees = (it.rotationDegrees + 90) % 360)
+    fun rotate90() {
+        updateAdjustments { it.copy(rotationDegrees = (it.rotationDegrees + 90) % 360) }
     }
 
     fun setCrop(crop: CropRect?) = updateAdjustments { it.copy(crop = crop) }
@@ -69,6 +95,28 @@ class EditorViewModel @Inject constructor(
         _uiState.update {
             it.copy(adjustments = EditorAdjustments(), filter = FramePuzzleFilter.NONE)
         }
+        schedulePreviewUpdate()
+    }
+
+    /**
+     * Reprocesa el preview 200ms después del último cambio (debounce)
+     * para no bloquear la UI en cada slider tick.
+     */
+    private fun schedulePreviewUpdate() {
+        debounceJob?.cancel()
+        debounceJob = viewModelScope.launch {
+            delay(200)
+            recomputePreview()
+        }
+    }
+
+    private suspend fun recomputePreview() {
+        val source = sourceBitmap ?: return
+        val state = _uiState.value
+        val result = withContext(Dispatchers.Default) {
+            imageProcessor.applyToBitmap(source, state.adjustments, state.filter)
+        }
+        _previewBitmap.value = result
     }
 
     /**
@@ -80,19 +128,23 @@ class EditorViewModel @Inject constructor(
         _uiState.update { it.copy(isSaving = true) }
         viewModelScope.launch {
             try {
-                val saved = imageProcessor.applyAndSave(
-                    originalPath = original,
-                    memoryId = memoryId,
-                    adjustments = _uiState.value.adjustments,
-                    filter = _uiState.value.filter,
-                )
+                val saved = withContext(Dispatchers.IO) {
+                    imageProcessor.applyAndSave(
+                        originalPath = original,
+                        memoryId = memoryId,
+                        adjustments = _uiState.value.adjustments,
+                        filter = _uiState.value.filter,
+                    )
+                }
                 memoryRepository.updateEditedImage(memoryId, saved.absolutePath)
                 // XP por editar (sección 19)
                 val user = userRepository.getCurrent()
                 if (user != null) {
                     userRepository.addXp(XpEvent.MEMORY_EDITED, user)
                 }
-                _uiState.update { it.copy(isSaving = false, editedPath = saved.absolutePath, saved = true) }
+                _uiState.update {
+                    it.copy(isSaving = false, editedPath = saved.absolutePath, saved = true)
+                }
             } catch (t: Throwable) {
                 _uiState.update { it.copy(isSaving = false, error = t.message ?: "Error al guardar") }
             }
@@ -105,5 +157,12 @@ class EditorViewModel @Inject constructor(
 
     fun clearError() {
         _uiState.update { it.copy(error = null) }
+    }
+
+    override fun onCleared() {
+        sourceBitmap?.recycle()
+        sourceBitmap = null
+        _previewBitmap.value?.recycle()
+        super.onCleared()
     }
 }

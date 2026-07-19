@@ -9,11 +9,13 @@ import com.jhoel.framepuzzle.core.utils.result.Failure
 import com.jhoel.framepuzzle.core.utils.result.FramePuzzleResult
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 /**
  * ViewModel de la pantalla Crear/Cámara (sección 11).
@@ -83,7 +85,10 @@ class CameraViewModel @Inject constructor(
         val pending = _uiState.value.pendingImagePath ?: return
         viewModelScope.launch {
             _uiState.update { it.copy(isCapturing = true, error = null) }
-            when (val result = createMemoryUseCase(pending, title = "Recuerdo")) {
+            val result = withContext(Dispatchers.IO) {
+                createMemoryUseCase(pending, title = "Recuerdo")
+            }
+            when (result) {
                 is FramePuzzleResult.Success -> _uiState.update {
                     it.copy(isCapturing = false, capturedMemoryId = result.data.id, pendingImagePath = null)
                 }

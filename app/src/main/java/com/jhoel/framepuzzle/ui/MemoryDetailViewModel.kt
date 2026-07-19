@@ -7,11 +7,13 @@ import com.jhoel.framepuzzle.feature.library.data.MemoryRepository
 import com.jhoel.framepuzzle.feature.library.domain.Memory
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @Immutable
 data class MemoryDetailUiState(
@@ -30,7 +32,9 @@ class MemoryDetailViewModel @Inject constructor(
 
     fun load(memoryId: String) {
         viewModelScope.launch {
-            val memory = memoryRepository.getById(memoryId)
+            val memory = withContext(Dispatchers.IO) {
+                memoryRepository.getById(memoryId)
+            }
             _uiState.update {
                 if (memory == null) {
                     it.copy(isLoading = false, error = "Recuerdo no encontrado")
@@ -44,7 +48,9 @@ class MemoryDetailViewModel @Inject constructor(
     fun toggleFavorite() {
         val current = _uiState.value.memory ?: return
         viewModelScope.launch {
-            memoryRepository.setFavorite(current.id, !current.favorite)
+            withContext(Dispatchers.IO) {
+                memoryRepository.setFavorite(current.id, !current.favorite)
+            }
             _uiState.update { st ->
                 st.copy(memory = st.memory?.copy(favorite = !current.favorite))
             }

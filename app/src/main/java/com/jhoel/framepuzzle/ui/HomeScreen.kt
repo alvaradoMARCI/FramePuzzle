@@ -12,17 +12,12 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.AddAPhoto
-import androidx.compose.material.icons.outlined.AutoAwesome
-import androidx.compose.material.icons.outlined.Collections
-import androidx.compose.material.icons.outlined.Timer
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -214,27 +209,12 @@ private fun QuickActions(onQuickCreate: () -> Unit) {
         fontWeight = FontWeight.SemiBold,
         color = MaterialTheme.colorScheme.onBackground,
     )
-    LazyRow(
-        horizontalArrangement = Arrangement.spacedBy(FramePuzzleSpacing.md),
-    ) {
-        items(quickActions()) { action ->
-            QuickActionCard(
-                icon = action.icon,
-                label = action.label,
-                onClick = if (action.id == "create") onQuickCreate else { {} },
-            )
-        }
-    }
+    QuickActionCard(
+        icon = Icons.Outlined.AddAPhoto,
+        label = "Nuevo recuerdo",
+        onClick = onQuickCreate,
+    )
 }
-
-private data class QuickAction(val id: String, val label: String, val icon: androidx.compose.ui.graphics.vector.ImageVector)
-
-private fun quickActions() = listOf(
-    QuickAction("create", "Nuevo recuerdo", Icons.Outlined.AddAPhoto),
-    QuickAction("auto", "Automagic", Icons.Outlined.AutoAwesome),
-    QuickAction("collections", "Álbumes", Icons.Outlined.Collections),
-    QuickAction("timer", "Línea temporal", Icons.Outlined.Timer),
-)
 
 @Composable
 private fun QuickActionCard(

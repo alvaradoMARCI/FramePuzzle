@@ -1,49 +1,68 @@
-# FramePuzzle app - ProGuard rules
+# FramePuzzle ProGuard/R8 rules
+-keepattributes *Annotation*, InnerClasses, EnclosingMethod, Signature, Exceptions
+-dontoptimize
 
-# Hilt
+-keep class com.jhoel.framepuzzle.** { *; }
+-keep @dagger.hilt.android.HiltAndroidApp class * { *; }
+-keep @dagger.hilt.android.AndroidEntryPoint class * { *; }
+-keep @dagger.hilt.android.lifecycle.HiltViewModel class * { *; }
+-keep @dagger.hilt.EntryPoint class * { *; }
+-keep @dagger.Module class * { *; }
+
 -keep class dagger.hilt.** { *; }
--keep class * extends dagger.hilt.android.lifecycle.HiltViewModel { *; }
+-keep class dagger.internal.** { *; }
+-keep class **_Hilt* { *; }
+-keep class **_GeneratedInjector { *; }
+-keep class **_Factory { *; }
+-keep class Hilt_* { *; }
+-keepclassmembers class * {
+    @javax.inject.Inject *;
+    @dagger.Provides *;
+}
 
-# Room
+-keep class androidx.compose.runtime.** { *; }
+-keepclassmembers class * {
+    @androidx.compose.runtime.Composable <methods>;
+}
+
+-keep class kotlin.Metadata { *; }
+-keepclassmembers class **$Companion { *; }
+
 -keep class * extends androidx.room.RoomDatabase { *; }
 -keep @androidx.room.Entity class * { *; }
+-keep @androidx.room.Dao class * { *; }
+-keep class **_Impl { *; }
 -keepclassmembers class * {
     @androidx.room.* <methods>;
     @androidx.room.* <fields>;
+    @androidx.room.TypeConverter <methods>;
 }
 
-# Kotlinx Serialization
--keepattributes *Annotation*, InnerClasses
--dontnote kotlinx.serialization.AnnotationsKt
 -keepclassmembers class **$$serializer { *; }
 -keepclassmembers @kotlinx.serialization.Serializable class * {
     static **$* *;
+    *** Companion;
 }
 
-# CameraX
 -keep class androidx.camera.** { *; }
-
-# ZXing
 -keep class com.google.zxing.** { *; }
 -keep class com.journeyapps.barcodescanner.** { *; }
-
-# Tink (usado por AndroidX SecurityCrypto para EncryptedSharedPreferences)
 -keep class com.google.crypto.tink.** { *; }
+-keep class androidx.security.crypto.** { *; }
+-keep class coil.** { *; }
+-keep class androidx.navigation.** { *; }
+-keep class androidx.lifecycle.** { *; }
 
-# ErrorProne annotations (referenciadas por Tink pero no incluidas en runtime)
 -dontwarn com.google.errorprone.annotations.**
 -dontwarn javax.annotation.**
-
-# Tink KeysDownloader (referencias opcionales a Google HTTP y Joda)
 -dontwarn com.google.api.client.http.**
+-dontwarn com.google.api.client.json.**
 -dontwarn org.joda.time.**
-
-# AndroidX SecurityCrypto
--keep class androidx.security.crypto.** { *; }
-
-# Coil
 -dontwarn coil.**
 
-# Compose
--keepclassmembers class androidx.compose.** { *; }
-
+-keepclassmembers class * extends androidx.lifecycle.ViewModel {
+    <init>();
+}
+-keepclassmembers class * extends androidx.lifecycle.AndroidViewModel {
+    <init>(...);
+}

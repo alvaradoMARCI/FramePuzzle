@@ -39,6 +39,7 @@ include(":app")
 // ----------------------------------------------------------------------------
 // Core: elementos compartidos
 // ----------------------------------------------------------------------------
+include(":core:domain")
 include(":core:database")
 include(":core:storage")
 include(":core:security")

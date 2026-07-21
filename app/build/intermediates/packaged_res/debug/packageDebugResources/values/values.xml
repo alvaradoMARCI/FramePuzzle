@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="fp_dark">#FF0F1117</color>
+    <color name="fp_light">#FFFAFBFC</color>
+    <string name="app_name">FramePuzzle</string>
+    <style name="Theme.FramePuzzle" parent="android:Theme.Material.NoActionBar">
+        <item name="android:windowBackground">@color/fp_dark</item>
+    </style>
+</resources>

@@ -1,0 +1,20 @@
+{
+    "logs": [
+        {
+            "outputFile": "com.jhoel.framepuzzle.app-mergeReleaseResources-70:/values-hdpi-v4/values-hdpi-v4.xml",
+            "map": [
+                {
+                    "source": "/home/z/.gradle/caches/8.9/transforms/764c28c737d59e6f1ca1aa133733a691/transformed/appcompat-1.6.1/res/values-hdpi-v4/values-hdpi-v4.xml",
+                    "from": {
+                        "startLines": "2",
+                        "startColumns": "4",
+                        "startOffsets": "55",
+                        "endLines": "6",
+                        "endColumns": "13",
+                        "endOffsets": "327"
+                    }
+                }
+            ]
+        }
+    ]
+}

@@ -21,7 +21,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -35,7 +35,7 @@ import org.koin.compose.koinInject
 @Composable
 fun ProfileScreen(onSettings: () -> Unit) {
     val userRepository: UserRepository = koinInject()
-    val user by userRepository.observeUser().collectAsState(initial = null)
+    val user by userRepository.observeUser().collectAsStateWithLifecycle(initialValue = null)
 
     Column(
         modifier = Modifier.fillMaxSize().padding(24.dp),

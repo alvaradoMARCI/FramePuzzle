@@ -22,7 +22,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.draw.clip
@@ -38,7 +38,7 @@ import org.koin.compose.koinInject
 @Composable
 fun LibraryScreen() {
     val memoryRepository: MemoryRepository = koinInject()
-    val memories by memoryRepository.observeAll().collectAsState(initial = emptyList())
+    val memories by memoryRepository.observeAll().collectAsStateWithLifecycle(initialValue = emptyList())
 
     if (memories.isEmpty()) {
         Box(

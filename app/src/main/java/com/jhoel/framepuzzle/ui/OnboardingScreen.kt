@@ -13,7 +13,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -30,7 +30,7 @@ import org.koin.compose.koinInject
 @Composable
 fun OnboardingScreen(onDone: () -> Unit) {
     val userRepository: UserRepository = koinInject()
-    val existingUser by userRepository.observeUser().collectAsState(initial = null)
+    val existingUser by userRepository.observeUser().collectAsStateWithLifecycle(initialValue = null)
     var name by remember { mutableStateOf("") }
     var isCreating by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()

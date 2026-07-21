@@ -1,12 +1,9 @@
 package com.jhoel.framepuzzle.feature.camera
 
-import android.Manifest
-import android.content.pm.PackageManager
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,7 +14,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Camera
@@ -26,7 +22,6 @@ import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.PhotoLibrary
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
@@ -38,25 +33,31 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
-import org.koin.androidx.compose.koinViewModel
+import kotlinx.coroutines.launch
+import com.jhoel.framepuzzle.core.domain.repository.MemoryRepository
+import com.jhoel.framepuzzle.core.storage.local.LocalStorageManager
+import org.koin.compose.koinInject
 
 @Composable
 fun CameraScreen(
     onMemoryCreated: () -> Unit = {},
-    viewModel: CameraViewModel = koinViewModel()
 ) {
     val context = LocalContext.current
-    val state by viewModel.state.collectAsStateWithLifecycle()
+    val memoryRepository: MemoryRepository = koinInject()
+    val storageManager: LocalStorageManager = koinInject()
+
+    var pendingPath by remember { mutableStateOf<String?>(null) }
+    var isCreating by remember { mutableStateOf(false) }
+    var error by remember { mutableStateOf<String?>(null) }
+    val scope = androidx.compose.runtime.rememberCoroutineScope()
 
     val galleryPicker = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
@@ -66,33 +67,50 @@ fun CameraScreen(
             context.contentResolver.openInputStream(uri)?.use { input ->
                 java.io.FileOutputStream(temp).use { output -> input.copyTo(output) }
             }
-            viewModel.onImageReady(temp.absolutePath)
-        }
-    }
-
-    LaunchedEffect(state.createdMemoryId) {
-        if (state.createdMemoryId != null) {
-            viewModel.consumeCreated()
-            onMemoryCreated()
+            pendingPath = temp.absolutePath
         }
     }
 
     Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
+        modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)
     ) {
         when {
-            // Confirm screen
-            state.pendingPath != null -> {
+            pendingPath != null -> {
                 ConfirmScreen(
-                    imagePath = state.pendingPath!!,
-                    isCreating = state.isCreating,
-                    onConfirm = { viewModel.confirm() },
-                    onRetake = { viewModel.discard() },
+                    imagePath = pendingPath!!,
+                    isCreating = isCreating,
+                    onConfirm = {
+                        isCreating = true
+                        val path = pendingPath!!
+                        scope.launch {
+                            try {
+                                val memoryId = java.util.UUID.randomUUID().toString()
+                                val target = java.io.File(storageManager.originalDir, "$memoryId.jpg")
+                                java.io.File(path).copyTo(target, overwrite = true)
+
+                                val memory = com.jhoel.framepuzzle.core.domain.model.Memory(
+                                    id = memoryId,
+                                    title = "Recuerdo ${System.currentTimeMillis()}",
+                                    originalImagePath = target.absolutePath,
+                                    editedImagePath = null,
+                                    createdDate = System.currentTimeMillis(),
+                                    albumId = null,
+                                    progress = 0f,
+                                    favorite = false,
+                                )
+                                memoryRepository.create(memory)
+                                pendingPath = null
+                                isCreating = false
+                                onMemoryCreated()
+                            } catch (e: Exception) {
+                                isCreating = false
+                                error = e.message ?: "Error al crear recuerdo"
+                            }
+                        }
+                    },
+                    onRetake = { pendingPath = null; error = null },
                 )
             }
-            // Camera or gallery
             else -> {
                 CreateOptions(
                     onOpenGallery = { galleryPicker.launch("image/*") },
@@ -100,8 +118,7 @@ fun CameraScreen(
             }
         }
 
-        // Error
-        state.error?.let { err ->
+        error?.let { err ->
             Text(
                 text = err,
                 color = MaterialTheme.colorScheme.error,
@@ -163,10 +180,7 @@ private fun ConfirmScreen(
         modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)
     ) {
         Box(
-            modifier = Modifier
-                .weight(1f)
-                .fillMaxWidth()
-                .background(Color.Black),
+            modifier = Modifier.weight(1f).fillMaxWidth().background(Color.Black),
             contentAlignment = Alignment.Center,
         ) {
             AsyncImage(

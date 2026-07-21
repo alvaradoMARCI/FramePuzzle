@@ -6,11 +6,8 @@ import com.jhoel.framepuzzle.core.domain.repository.MemoryRepository
 import com.jhoel.framepuzzle.core.domain.repository.MemoryRepositoryImpl
 import com.jhoel.framepuzzle.core.domain.repository.UserRepository
 import com.jhoel.framepuzzle.core.domain.repository.UserRepositoryImpl
-import com.jhoel.framepuzzle.core.domain.usecase.CreateMemoryUseCase
 import com.jhoel.framepuzzle.core.storage.SettingsRepository
 import com.jhoel.framepuzzle.core.storage.local.LocalStorageManager
-import com.jhoel.framepuzzle.feature.camera.CameraViewModel
-import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
 val appModule = module {
@@ -32,8 +29,4 @@ val appModule = module {
 
     single<UserRepository> { UserRepositoryImpl(get()) }
     single<MemoryRepository> { MemoryRepositoryImpl(get()) }
-
-    single { CreateMemoryUseCase(get(), get<LocalStorageManager>().originalDir) }
-
-    viewModel { CameraViewModel(get()) }
 }
